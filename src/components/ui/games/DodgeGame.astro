@@ -1,0 +1,254 @@
+---
+// Beige Dodge - Dodge falling blocks game
+---
+
+<div class="game-wrapper">
+  <canvas id="dodgeCanvas" width="400" height="500"></canvas>
+  <div class="game-overlay" id="dodgeOverlay">
+    <div class="game-start">
+      <h4>Beige Dodge</h4>
+      <p>Dodge the falling blocks!</p>
+      <p class="controls">Use ← → arrows or tap to move</p>
+      <button id="dodgeStart" class="game-button">Start Game</button>
+    </div>
+  </div>
+  <div class="game-score">
+    <span>Score: <strong id="dodgeScore">0</strong></span>
+    <span>High: <strong id="dodgeHigh">0</strong></span>
+  </div>
+</div>
+
+<script>
+  const canvas = document.getElementById('dodgeCanvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  const overlay = document.getElementById('dodgeOverlay')!;
+  const startButton = document.getElementById('dodgeStart')!;
+  const scoreElement = document.getElementById('dodgeScore')!;
+  const highScoreElement = document.getElementById('dodgeHigh')!;
+
+  const COLORS = {
+    player: '#D4A574',
+    obstacle: '#3E3832',
+    bg: '#FAF8F5',
+  };
+
+  let gameRunning = false;
+  let score = 0;
+  let highScore = parseInt(localStorage.getItem('dodgeHighScore') || '0');
+  highScoreElement.textContent = highScore.toString();
+
+  const player = {
+    x: canvas.width / 2 - 15,
+    y: canvas.height - 60,
+    width: 30,
+    height: 30,
+    speed: 6,
+  };
+
+  let obstacles: Array<{ x: number; y: number; width: number; height: number; speed: number }> = [];
+  let keys = { left: false, right: false };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') keys.left = true;
+    if (e.key === 'ArrowRight') keys.right = true;
+  });
+
+  document.addEventListener('keyup', (e) => {
+    if (e.key === 'ArrowLeft') keys.left = false;
+    if (e.key === 'ArrowRight') keys.right = false;
+  });
+
+  let touchStartX = 0;
+  canvas.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const touchX = e.touches[0].clientX;
+    const diff = touchX - touchStartX;
+    keys.left = diff < -20;
+    keys.right = diff > 20;
+    touchStartX = touchX;
+  });
+
+  canvas.addEventListener('touchend', () => {
+    keys.left = false;
+    keys.right = false;
+  });
+
+  function spawnObstacle() {
+    const width = 30 + Math.random() * 40;
+    obstacles.push({
+      x: Math.random() * (canvas.width - width),
+      y: -30,
+      width,
+      height: 30,
+      speed: 2 + Math.random() * 2 + score * 0.01,
+    });
+  }
+
+  function updatePlayer() {
+    if (keys.left && player.x > 0) player.x -= player.speed;
+    if (keys.right && player.x < canvas.width - player.width) player.x += player.speed;
+  }
+
+  function updateObstacles() {
+    obstacles.forEach((obs, index) => {
+      obs.y += obs.speed;
+      if (obs.y > canvas.height) {
+        obstacles.splice(index, 1);
+        score += 10;
+        scoreElement.textContent = score.toString();
+      }
+      if (
+        player.x < obs.x + obs.width &&
+        player.x + player.width > obs.x &&
+        player.y < obs.y + obs.height &&
+        player.y + player.height > obs.y
+      ) {
+        gameOver();
+      }
+    });
+  }
+
+  function draw() {
+    ctx.fillStyle = COLORS.bg;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = COLORS.player;
+    ctx.beginPath();
+    ctx.arc(player.x + player.width / 2, player.y + player.height / 2, player.width / 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = COLORS.obstacle;
+    obstacles.forEach(obs => ctx.fillRect(obs.x, obs.y, obs.width, obs.height));
+  }
+
+  let lastSpawn = 0;
+  function gameLoop(timestamp: number) {
+    if (!gameRunning) return;
+    updatePlayer();
+    updateObstacles();
+    draw();
+    if (timestamp - lastSpawn > 1000 - score * 2) {
+      spawnObstacle();
+      lastSpawn = timestamp;
+    }
+    requestAnimationFrame(gameLoop);
+  }
+
+  function startGame() {
+    gameRunning = true;
+    score = 0;
+    obstacles = [];
+    player.x = canvas.width / 2 - 15;
+    scoreElement.textContent = '0';
+    overlay.style.display = 'none';
+    requestAnimationFrame(gameLoop);
+  }
+
+  function gameOver() {
+    gameRunning = false;
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem('dodgeHighScore', highScore.toString());
+      highScoreElement.textContent = highScore.toString();
+    }
+    overlay.innerHTML = `
+      <div class="game-start">
+        <h4>Game Over!</h4>
+        <p>Score: <strong>${score}</strong></p>
+        <p>High: <strong>${highScore}</strong></p>
+        <button id="dodgeRestart" class="game-button">Play Again</button>
+      </div>
+    `;
+    overlay.style.display = 'flex';
+    document.getElementById('dodgeRestart')!.addEventListener('click', startGame);
+  }
+
+  startButton.addEventListener('click', startGame);
+</script>
+
+<style>
+  .game-wrapper {
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  canvas {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    display: block;
+    background: var(--color-bg-primary);
+  }
+
+  .game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(250, 248, 245, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+  }
+
+  .game-start {
+    text-align: center;
+    padding: var(--space-6);
+  }
+
+  .game-start h4 {
+    font-size: var(--font-size-xl);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+  }
+
+  .game-start p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-3);
+  }
+
+  .controls {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  .game-button {
+    background: var(--color-accent-primary);
+    color: white;
+    border: none;
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .game-button:hover {
+    background: var(--color-accent-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .game-score {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .game-score strong {
+    color: var(--color-accent-primary);
+    font-size: var(--font-size-base);
+  }
+</style>

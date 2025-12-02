@@ -1,209 +1,80 @@
 ---
-// Beige Dodge - A mini-game styled with warm colors
+import DodgeGame from './games/DodgeGame.astro';
+import FlappyBird from './games/FlappyBird.astro';
 ---
 
 <div class="game-container">
   <div class="game-header">
-    <h3>🎮 Beige Dodge</h3>
-    <p class="game-instructions">Use ← → arrow keys or tap left/right to dodge falling blocks!</p>
+    <h3>🎮 Mini Games</h3>
+    <p class="game-instructions">Choose a game to play and have fun!</p>
   </div>
 
-  <div class="game-wrapper">
-    <canvas id="gameCanvas" width="400" height="500"></canvas>
-    <div class="game-overlay" id="gameOverlay">
-      <div class="game-start">
-        <h4>Ready to Play?</h4>
-        <p>Dodge the falling blocks to score points!</p>
-        <button id="startButton" class="game-button">Start Game</button>
-      </div>
+  <!-- Game Selector -->
+  <div class="game-selector" id="gameSelector">
+    <button class="game-card" data-game="dodge">
+      <div class="game-card-icon">🎯</div>
+      <h4>Beige Dodge</h4>
+      <p>Dodge falling blocks and survive as long as you can!</p>
+      <span class="game-card-action">Play Now →</span>
+    </button>
+
+    <button class="game-card" data-game="flappy">
+      <div class="game-card-icon">🐦</div>
+      <h4>Beige Bird</h4>
+      <p>Tap to flap and navigate through pipes!</p>
+      <span class="game-card-action">Play Now →</span>
+    </button>
+  </div>
+
+  <!-- Game Display Area -->
+  <div class="game-display" id="gameDisplay" style="display: none;">
+    <button class="back-button" id="backButton">
+      ← Back to Games
+    </button>
+
+    <div class="game-content" id="dodgeGame" style="display: none;">
+      <DodgeGame />
     </div>
-    <div class="game-score">
-      <span>Score: <strong id="score">0</strong></span>
-      <span>High Score: <strong id="highScore">0</strong></span>
+
+    <div class="game-content" id="flappyGame" style="display: none;">
+      <FlappyBird />
     </div>
   </div>
 </div>
 
 <script>
-  const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
-  const ctx = canvas.getContext('2d')!;
-  const overlay = document.getElementById('gameOverlay')!;
-  const startButton = document.getElementById('startButton')!;
-  const scoreElement = document.getElementById('score')!;
-  const highScoreElement = document.getElementById('highScore')!;
+  const gameSelector = document.getElementById('gameSelector')!;
+  const gameDisplay = document.getElementById('gameDisplay')!;
+  const backButton = document.getElementById('backButton')!;
+  const dodgeGame = document.getElementById('dodgeGame')!;
+  const flappyGame = document.getElementById('flappyGame')!;
 
-  // Game colors from theme
-  const COLORS = {
-    player: '#D4A574',      // Warm tan/gold
-    obstacle: '#3E3832',    // Dark brown
-    bg: '#FAF8F5',          // Soft off-white
-    secondary: '#E8DFD3',   // Hover beige
-  };
+  // Game selection
+  document.querySelectorAll('.game-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const gameName = (card as HTMLElement).dataset.game;
 
-  let gameRunning = false;
-  let score = 0;
-  let highScore = parseInt(localStorage.getItem('beigeHighScore') || '0');
-  highScoreElement.textContent = highScore.toString();
+      gameSelector.style.display = 'none';
+      gameDisplay.style.display = 'block';
 
-  // Game objects
-  const player = {
-    x: canvas.width / 2 - 15,
-    y: canvas.height - 60,
-    width: 30,
-    height: 30,
-    speed: 6,
-  };
-
-  let obstacles: Array<{ x: number; y: number; width: number; height: number; speed: number }> = [];
-  let keys = { left: false, right: false };
-
-  // Input handling
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') keys.left = true;
-    if (e.key === 'ArrowRight') keys.right = true;
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') keys.left = false;
-    if (e.key === 'ArrowRight') keys.right = false;
-  });
-
-  // Mobile touch controls
-  let touchStartX = 0;
-  canvas.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX;
-  });
-
-  canvas.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    const touchX = e.touches[0].clientX;
-    const diff = touchX - touchStartX;
-
-    if (diff < -20) keys.left = true;
-    else keys.left = false;
-
-    if (diff > 20) keys.right = true;
-    else keys.right = false;
-
-    touchStartX = touchX;
-  });
-
-  canvas.addEventListener('touchend', () => {
-    keys.left = false;
-    keys.right = false;
-  });
-
-  function spawnObstacle() {
-    const width = 30 + Math.random() * 40;
-    obstacles.push({
-      x: Math.random() * (canvas.width - width),
-      y: -30,
-      width,
-      height: 30,
-      speed: 2 + Math.random() * 2 + score * 0.01,
-    });
-  }
-
-  function updatePlayer() {
-    if (keys.left && player.x > 0) {
-      player.x -= player.speed;
-    }
-    if (keys.right && player.x < canvas.width - player.width) {
-      player.x += player.speed;
-    }
-  }
-
-  function updateObstacles() {
-    obstacles.forEach((obs, index) => {
-      obs.y += obs.speed;
-
-      // Remove off-screen obstacles
-      if (obs.y > canvas.height) {
-        obstacles.splice(index, 1);
-        score += 10;
-        scoreElement.textContent = score.toString();
-      }
-
-      // Collision detection
-      if (
-        player.x < obs.x + obs.width &&
-        player.x + player.width > obs.x &&
-        player.y < obs.y + obs.height &&
-        player.y + player.height > obs.y
-      ) {
-        gameOver();
+      // Show selected game
+      if (gameName === 'dodge') {
+        dodgeGame.style.display = 'block';
+        flappyGame.style.display = 'none';
+      } else if (gameName === 'flappy') {
+        flappyGame.style.display = 'block';
+        dodgeGame.style.display = 'none';
       }
     });
-  }
+  });
 
-  function draw() {
-    // Clear canvas
-    ctx.fillStyle = COLORS.bg;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw player (circle)
-    ctx.fillStyle = COLORS.player;
-    ctx.beginPath();
-    ctx.arc(player.x + player.width / 2, player.y + player.height / 2, player.width / 2, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Draw obstacles
-    ctx.fillStyle = COLORS.obstacle;
-    obstacles.forEach(obs => {
-      ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-    });
-  }
-
-  let lastSpawn = 0;
-  function gameLoop(timestamp: number) {
-    if (!gameRunning) return;
-
-    updatePlayer();
-    updateObstacles();
-    draw();
-
-    // Spawn obstacles
-    if (timestamp - lastSpawn > 1000 - score * 2) {
-      spawnObstacle();
-      lastSpawn = timestamp;
-    }
-
-    requestAnimationFrame(gameLoop);
-  }
-
-  function startGame() {
-    gameRunning = true;
-    score = 0;
-    obstacles = [];
-    player.x = canvas.width / 2 - 15;
-    scoreElement.textContent = '0';
-    overlay.style.display = 'none';
-    requestAnimationFrame(gameLoop);
-  }
-
-  function gameOver() {
-    gameRunning = false;
-
-    if (score > highScore) {
-      highScore = score;
-      localStorage.setItem('beigeHighScore', highScore.toString());
-      highScoreElement.textContent = highScore.toString();
-    }
-
-    overlay.innerHTML = `
-      <div class="game-start">
-        <h4>Game Over!</h4>
-        <p>Your score: <strong>${score}</strong></p>
-        <p>High score: <strong>${highScore}</strong></p>
-        <button id="restartButton" class="game-button">Play Again</button>
-      </div>
-    `;
-    overlay.style.display = 'flex';
-
-    document.getElementById('restartButton')!.addEventListener('click', startGame);
-  }
-
-  startButton.addEventListener('click', startGame);
+  // Back to selector
+  backButton.addEventListener('click', () => {
+    gameDisplay.style.display = 'none';
+    gameSelector.style.display = 'grid';
+    dodgeGame.style.display = 'none';
+    flappyGame.style.display = 'none';
+  });
 </script>
 
 <style>
@@ -217,7 +88,7 @@
 
   .game-header {
     text-align: center;
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-8);
   }
 
   .game-header h3 {
@@ -232,84 +103,92 @@
     margin: 0;
   }
 
-  .game-wrapper {
-    position: relative;
-    max-width: 400px;
+  /* Game Selector */
+  .game-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-6);
+    max-width: 800px;
     margin: 0 auto;
   }
 
-  #gameCanvas {
-    width: 100%;
-    height: auto;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    display: block;
+  .game-card {
     background: var(--color-bg-primary);
-  }
-
-  .game-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(250, 248, 245, 0.95);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-md);
-  }
-
-  .game-start {
-    text-align: center;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
     padding: var(--space-6);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
   }
 
-  .game-start h4 {
+  .game-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-accent-primary);
+  }
+
+  .game-card-icon {
+    font-size: var(--font-size-5xl);
+    margin-bottom: var(--space-2);
+  }
+
+  .game-card h4 {
     font-size: var(--font-size-xl);
     color: var(--color-text-primary);
-    margin-bottom: var(--space-4);
+    margin: 0;
   }
 
-  .game-start p {
-    color: var(--color-text-secondary);
-    margin-bottom: var(--space-4);
-  }
-
-  .game-button {
-    background: var(--color-accent-primary);
-    color: white;
-    border: none;
-    padding: var(--space-3) var(--space-6);
-    border-radius: var(--radius-full);
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-  }
-
-  .game-button:hover {
-    background: var(--color-accent-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-  }
-
-  .game-score {
-    display: flex;
-    justify-content: space-between;
-    margin-top: var(--space-4);
-    padding: var(--space-3) var(--space-4);
-    background: var(--color-bg-tertiary);
-    border-radius: var(--radius-md);
+  .game-card p {
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
+    margin: 0;
+    flex-grow: 1;
   }
 
-  .game-score strong {
+  .game-card-action {
+    font-size: var(--font-size-sm);
     color: var(--color-accent-primary);
-    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    margin-top: var(--space-2);
   }
 
+  /* Game Display */
+  .game-display {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .back-button {
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-bottom: var(--space-6);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .back-button:hover {
+    background: var(--color-bg-hover);
+    color: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
+  }
+
+  .game-content {
+    margin-top: var(--space-4);
+  }
+
+  /* Responsive */
   @media (max-width: 768px) {
     .game-container {
       padding: var(--space-4);
@@ -319,8 +198,13 @@
       font-size: var(--font-size-xl);
     }
 
-    #gameCanvas {
-      max-width: 100%;
+    .game-selector {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+
+    .game-card {
+      padding: var(--space-4);
     }
   }
 </style>
