@@ -105,25 +105,53 @@ import FlappyBird from './games/FlappyBird.astro';
 
   /* Game Selector */
   .game-selector {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--space-6);
-    max-width: 800px;
+    display: flex;
+    gap: var(--space-4);
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: var(--space-2) var(--space-1);
     margin: 0 auto;
+    max-width: 100%;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+
+  .game-selector::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .game-selector::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 0 var(--space-4);
+  }
+
+  .game-selector::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+  }
+
+  .game-selector::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent-primary);
   }
 
   .game-card {
     background: var(--color-bg-primary);
     border: 2px solid var(--color-border);
     border-radius: var(--radius-lg);
-    padding: var(--space-6);
+    padding: var(--space-5);
     text-align: center;
     cursor: pointer;
     transition: all var(--transition-base);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
+    min-width: 180px;
+    max-width: 200px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
   }
 
   .game-card:hover {
@@ -133,28 +161,30 @@ import FlappyBird from './games/FlappyBird.astro';
   }
 
   .game-card-icon {
-    font-size: var(--font-size-5xl);
-    margin-bottom: var(--space-2);
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--space-1);
   }
 
   .game-card h4 {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-base);
     color: var(--color-text-primary);
     margin: 0;
+    font-weight: var(--font-weight-medium);
   }
 
   .game-card p {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     color: var(--color-text-secondary);
     margin: 0;
     flex-grow: 1;
+    line-height: var(--line-height-tight);
   }
 
   .game-card-action {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     color: var(--color-accent-primary);
     font-weight: var(--font-weight-medium);
-    margin-top: var(--space-2);
+    margin-top: var(--space-1);
   }
 
   /* Game Display */
@@ -199,12 +229,18 @@ import FlappyBird from './games/FlappyBird.astro';
     }
 
     .game-selector {
-      grid-template-columns: 1fr;
-      gap: var(--space-4);
+      gap: var(--space-3);
+      padding: var(--space-2) 0;
     }
 
     .game-card {
+      min-width: 160px;
+      max-width: 180px;
       padding: var(--space-4);
+    }
+
+    .game-card-icon {
+      font-size: var(--font-size-3xl);
     }
   }
 </style>
