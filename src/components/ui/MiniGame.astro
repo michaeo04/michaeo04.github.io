@@ -1,0 +1,326 @@
+---
+// Beige Dodge - A mini-game styled with warm colors
+---
+
+<div class="game-container">
+  <div class="game-header">
+    <h3>🎮 Beige Dodge</h3>
+    <p class="game-instructions">Use ← → arrow keys or tap left/right to dodge falling blocks!</p>
+  </div>
+
+  <div class="game-wrapper">
+    <canvas id="gameCanvas" width="400" height="500"></canvas>
+    <div class="game-overlay" id="gameOverlay">
+      <div class="game-start">
+        <h4>Ready to Play?</h4>
+        <p>Dodge the falling blocks to score points!</p>
+        <button id="startButton" class="game-button">Start Game</button>
+      </div>
+    </div>
+    <div class="game-score">
+      <span>Score: <strong id="score">0</strong></span>
+      <span>High Score: <strong id="highScore">0</strong></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  const overlay = document.getElementById('gameOverlay')!;
+  const startButton = document.getElementById('startButton')!;
+  const scoreElement = document.getElementById('score')!;
+  const highScoreElement = document.getElementById('highScore')!;
+
+  // Game colors from theme
+  const COLORS = {
+    player: '#D4A574',      // Warm tan/gold
+    obstacle: '#3E3832',    // Dark brown
+    bg: '#FAF8F5',          // Soft off-white
+    secondary: '#E8DFD3',   // Hover beige
+  };
+
+  let gameRunning = false;
+  let score = 0;
+  let highScore = parseInt(localStorage.getItem('beigeHighScore') || '0');
+  highScoreElement.textContent = highScore.toString();
+
+  // Game objects
+  const player = {
+    x: canvas.width / 2 - 15,
+    y: canvas.height - 60,
+    width: 30,
+    height: 30,
+    speed: 6,
+  };
+
+  let obstacles: Array<{ x: number; y: number; width: number; height: number; speed: number }> = [];
+  let keys = { left: false, right: false };
+
+  // Input handling
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') keys.left = true;
+    if (e.key === 'ArrowRight') keys.right = true;
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') keys.left = false;
+    if (e.key === 'ArrowRight') keys.right = false;
+  });
+
+  // Mobile touch controls
+  let touchStartX = 0;
+  canvas.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const touchX = e.touches[0].clientX;
+    const diff = touchX - touchStartX;
+
+    if (diff < -20) keys.left = true;
+    else keys.left = false;
+
+    if (diff > 20) keys.right = true;
+    else keys.right = false;
+
+    touchStartX = touchX;
+  });
+
+  canvas.addEventListener('touchend', () => {
+    keys.left = false;
+    keys.right = false;
+  });
+
+  function spawnObstacle() {
+    const width = 30 + Math.random() * 40;
+    obstacles.push({
+      x: Math.random() * (canvas.width - width),
+      y: -30,
+      width,
+      height: 30,
+      speed: 2 + Math.random() * 2 + score * 0.01,
+    });
+  }
+
+  function updatePlayer() {
+    if (keys.left && player.x > 0) {
+      player.x -= player.speed;
+    }
+    if (keys.right && player.x < canvas.width - player.width) {
+      player.x += player.speed;
+    }
+  }
+
+  function updateObstacles() {
+    obstacles.forEach((obs, index) => {
+      obs.y += obs.speed;
+
+      // Remove off-screen obstacles
+      if (obs.y > canvas.height) {
+        obstacles.splice(index, 1);
+        score += 10;
+        scoreElement.textContent = score.toString();
+      }
+
+      // Collision detection
+      if (
+        player.x < obs.x + obs.width &&
+        player.x + player.width > obs.x &&
+        player.y < obs.y + obs.height &&
+        player.y + player.height > obs.y
+      ) {
+        gameOver();
+      }
+    });
+  }
+
+  function draw() {
+    // Clear canvas
+    ctx.fillStyle = COLORS.bg;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw player (circle)
+    ctx.fillStyle = COLORS.player;
+    ctx.beginPath();
+    ctx.arc(player.x + player.width / 2, player.y + player.height / 2, player.width / 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw obstacles
+    ctx.fillStyle = COLORS.obstacle;
+    obstacles.forEach(obs => {
+      ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+    });
+  }
+
+  let lastSpawn = 0;
+  function gameLoop(timestamp: number) {
+    if (!gameRunning) return;
+
+    updatePlayer();
+    updateObstacles();
+    draw();
+
+    // Spawn obstacles
+    if (timestamp - lastSpawn > 1000 - score * 2) {
+      spawnObstacle();
+      lastSpawn = timestamp;
+    }
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  function startGame() {
+    gameRunning = true;
+    score = 0;
+    obstacles = [];
+    player.x = canvas.width / 2 - 15;
+    scoreElement.textContent = '0';
+    overlay.style.display = 'none';
+    requestAnimationFrame(gameLoop);
+  }
+
+  function gameOver() {
+    gameRunning = false;
+
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem('beigeHighScore', highScore.toString());
+      highScoreElement.textContent = highScore.toString();
+    }
+
+    overlay.innerHTML = `
+      <div class="game-start">
+        <h4>Game Over!</h4>
+        <p>Your score: <strong>${score}</strong></p>
+        <p>High score: <strong>${highScore}</strong></p>
+        <button id="restartButton" class="game-button">Play Again</button>
+      </div>
+    `;
+    overlay.style.display = 'flex';
+
+    document.getElementById('restartButton')!.addEventListener('click', startGame);
+  }
+
+  startButton.addEventListener('click', startGame);
+</script>
+
+<style>
+  .game-container {
+    margin: var(--space-12) 0;
+    padding: var(--space-8);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--color-border);
+  }
+
+  .game-header {
+    text-align: center;
+    margin-bottom: var(--space-6);
+  }
+
+  .game-header h3 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-accent-primary);
+    margin-bottom: var(--space-3);
+  }
+
+  .game-instructions {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .game-wrapper {
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  #gameCanvas {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    display: block;
+    background: var(--color-bg-primary);
+  }
+
+  .game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(250, 248, 245, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+  }
+
+  .game-start {
+    text-align: center;
+    padding: var(--space-6);
+  }
+
+  .game-start h4 {
+    font-size: var(--font-size-xl);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  .game-start p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-4);
+  }
+
+  .game-button {
+    background: var(--color-accent-primary);
+    color: white;
+    border: none;
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .game-button:hover {
+    background: var(--color-accent-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .game-score {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .game-score strong {
+    color: var(--color-accent-primary);
+    font-size: var(--font-size-base);
+  }
+
+  @media (max-width: 768px) {
+    .game-container {
+      padding: var(--space-4);
+    }
+
+    .game-header h3 {
+      font-size: var(--font-size-xl);
+    }
+
+    #gameCanvas {
+      max-width: 100%;
+    }
+  }
+</style>

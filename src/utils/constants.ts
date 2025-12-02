@@ -1,4 +1,4 @@
-export const SITE_TITLE = 'Michael Eo';
+export const SITE_TITLE = 'Michael Ngủ yên';
 export const SITE_DESCRIPTION = 'My personal space on the web';
 
 export const CATEGORIES = [

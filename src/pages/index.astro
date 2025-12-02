@@ -1,5 +1,6 @@
 ---
 import CategoryLayout from '@layouts/CategoryLayout.astro';
+import MiniGame from '@components/ui/MiniGame.astro';
 import { getFeaturedProjects } from '@utils/content';
 import { CATEGORIES } from '@utils/constants';
 
@@ -16,7 +17,12 @@ const featured = await getFeaturedProjects();
       Hi! I'm Michael. This is my personal space on the web where I share
       my projects, thoughts, and memories.
     </p>
+    <p class="game-intro">
+      Before you explore, take a break and play a quick game! 🎮
+    </p>
   </section>
+
+  <MiniGame />
 
   {featured.length > 0 && (
     <section class="featured">
@@ -61,8 +67,15 @@ const featured = await getFeaturedProjects();
   .intro {
     font-size: var(--font-size-xl);
     line-height: var(--line-height-relaxed);
-    margin-bottom: var(--space-12);
+    margin-bottom: var(--space-8);
     color: var(--color-text-secondary);
+  }
+
+  .game-intro {
+    margin-top: var(--space-4);
+    font-size: var(--font-size-base);
+    color: var(--color-accent-primary);
+    font-weight: var(--font-weight-medium);
   }
 
   .featured {
