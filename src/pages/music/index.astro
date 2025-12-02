@@ -1,0 +1,37 @@
+---
+import CategoryLayout from '@layouts/CategoryLayout.astro';
+import { getAllMusic } from '@utils/content';
+
+const music = await getAllMusic();
+---
+
+<CategoryLayout
+  title="Music | Michael Eo"
+  contentTitle="Music"
+  contentDescription="Soundtracks to my creative process"
+>
+  <div class="music-list">
+    {music.map(async (item) => {
+      const { Content } = await item.render();
+      return (
+        <article class="music-content prose">
+          <Content />
+        </article>
+      );
+    })}
+  </div>
+</CategoryLayout>
+
+<style>
+  .music-list {
+    display: grid;
+    gap: var(--space-12);
+  }
+
+  .music-content {
+    padding: var(--space-6);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+  }
+</style>

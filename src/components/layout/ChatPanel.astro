@@ -1,0 +1,44 @@
+---
+interface Props {
+  disabled?: boolean;
+}
+
+const { disabled = true } = Astro.props;
+---
+
+<aside class={`chat-panel ${disabled ? 'disabled' : ''}`}>
+  <div class="chat-placeholder">
+    <div class="chat-icon">💬</div>
+    <p class="chat-title">Chat</p>
+    <p class="chat-subtitle text-muted">Coming Soon</p>
+    <p class="chat-phase text-muted">Phase 2</p>
+  </div>
+</aside>
+
+<style>
+  .chat-placeholder {
+    text-align: center;
+    padding: var(--space-6);
+  }
+
+  .chat-icon {
+    font-size: var(--font-size-5xl);
+    margin-bottom: var(--space-4);
+    opacity: 0.5;
+  }
+
+  .chat-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-2);
+  }
+
+  .chat-subtitle {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--space-1);
+  }
+
+  .chat-phase {
+    font-size: var(--font-size-sm);
+  }
+</style>

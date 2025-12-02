@@ -1,0 +1,174 @@
+---
+import CategoryLayout from '@layouts/CategoryLayout.astro';
+import { getFeaturedProjects } from '@utils/content';
+import { CATEGORIES } from '@utils/constants';
+
+const featured = await getFeaturedProjects();
+---
+
+<CategoryLayout
+  title="Michael Eo | Portfolio"
+  contentTitle="Welcome"
+  contentDescription="Developer, creator, and lifelong learner"
+>
+  <section class="intro">
+    <p>
+      Hi! I'm Michael. This is my personal space on the web where I share
+      my projects, thoughts, and memories.
+    </p>
+  </section>
+
+  {featured.length > 0 && (
+    <section class="featured">
+      <h2>Featured Projects</h2>
+      <div class="projects-grid">
+        {featured.map(project => (
+          <article class="project-card">
+            <h3>
+              <a href={`/projects/${project.slug}`}>
+                {project.data.title}
+              </a>
+            </h3>
+            <p>{project.data.description}</p>
+            {project.data.tags && (
+              <div class="tags">
+                {project.data.tags.map(tag => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="explore">
+    <h2>Explore</h2>
+    <p>Browse through different sections:</p>
+    <div class="category-links">
+      {CATEGORIES.map(category => (
+        <a href={category.path} class="category-link">
+          <span class="category-icon">{category.icon}</span>
+          <span class="category-name">{category.name}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</CategoryLayout>
+
+<style>
+  .intro {
+    font-size: var(--font-size-xl);
+    line-height: var(--line-height-relaxed);
+    margin-bottom: var(--space-12);
+    color: var(--color-text-secondary);
+  }
+
+  .featured {
+    margin-bottom: var(--space-16);
+  }
+
+  .projects-grid {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+  }
+
+  .project-card {
+    padding: var(--space-6);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    transition: all var(--transition-base);
+  }
+
+  .project-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-accent-primary);
+  }
+
+  .project-card h3 {
+    margin-bottom: var(--space-3);
+    margin-top: 0;
+  }
+
+  .project-card h3 a {
+    color: var(--color-accent-primary);
+    text-decoration: none;
+  }
+
+  .project-card h3 a:hover {
+    color: var(--color-accent-hover);
+  }
+
+  .project-card p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-4);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .tag {
+    font-size: var(--font-size-sm);
+    padding: var(--space-1) var(--space-3);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+  }
+
+  .explore {
+    margin-top: var(--space-12);
+  }
+
+  .category-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+  }
+
+  .category-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-6);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--transition-base);
+  }
+
+  .category-link:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-accent-primary);
+  }
+
+  .category-icon {
+    font-size: var(--font-size-4xl);
+  }
+
+  .category-name {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  @media (max-width: 768px) {
+    .intro {
+      font-size: var(--font-size-lg);
+    }
+
+    .category-links {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+</style>

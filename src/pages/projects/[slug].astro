@@ -1,0 +1,99 @@
+---
+import { getCollection } from 'astro:content';
+import PostLayout from '@layouts/PostLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map(project => ({
+    params: { slug: project.slug },
+    props: { project }
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+---
+
+<PostLayout
+  title={project.data.title}
+  date={project.data.date}
+  category="projects"
+>
+  {(project.data.github || project.data.demo) && (
+    <div class="project-links">
+      {project.data.github && (
+        <a href={project.data.github} target="_blank" rel="noopener noreferrer" class="project-link">
+          GitHub →
+        </a>
+      )}
+      {project.data.demo && (
+        <a href={project.data.demo} target="_blank" rel="noopener noreferrer" class="project-link">
+          Live Demo →
+        </a>
+      )}
+    </div>
+  )}
+
+  <Content />
+
+  {project.data.tags && (
+    <div class="tags-section">
+      <h3>Tags</h3>
+      <div class="tags">
+        {project.data.tags.map(tag => (
+          <span class="tag">{tag}</span>
+        ))}
+      </div>
+    </div>
+  )}
+</PostLayout>
+
+<style>
+  .project-links {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+    padding: var(--space-4);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+  }
+
+  .project-link {
+    color: var(--color-accent-primary);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    transition: color var(--transition-fast);
+  }
+
+  .project-link:hover {
+    color: var(--color-accent-hover);
+  }
+
+  .tags-section {
+    margin-top: var(--space-12);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .tags-section h3 {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--space-4);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .tag {
+    font-size: var(--font-size-sm);
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+  }
+</style>

@@ -1,0 +1,119 @@
+---
+import { CATEGORIES, SITE_TITLE } from '@utils/constants';
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+
+const isActive = (path: string) => currentPath.startsWith(path);
+---
+
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <h1>{SITE_TITLE}</h1>
+    <p class="tagline">Developer & Creator</p>
+  </div>
+
+  <ul class="nav-list">
+    {CATEGORIES.map(category => (
+      <li>
+        <a
+          href={category.path}
+          class={isActive(category.path) ? 'active' : ''}
+        >
+          <span class="icon">{category.icon}</span>
+          <span class="name">{category.name}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .sidebar-header {
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .sidebar-header h1 {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--space-2);
+    color: var(--color-text-primary);
+  }
+
+  .tagline {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-list li {
+    margin-bottom: var(--space-2);
+  }
+
+  .nav-list a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-text-primary);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .nav-list a:hover {
+    background-color: var(--color-bg-hover);
+    color: var(--color-accent-primary);
+    text-decoration: none;
+  }
+
+  .nav-list a.active {
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-accent-primary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .icon {
+    font-size: var(--font-size-xl);
+    line-height: 1;
+  }
+
+  .name {
+    font-size: var(--font-size-base);
+  }
+
+  @media (max-width: 768px) {
+    .sidebar-header h1 {
+      font-size: var(--font-size-xl);
+    }
+
+    .nav-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .nav-list li {
+      margin: 0;
+    }
+
+    .nav-list a {
+      padding: var(--space-2) var(--space-3);
+      font-size: var(--font-size-sm);
+    }
+
+    .icon {
+      font-size: var(--font-size-base);
+    }
+  }
+</style>

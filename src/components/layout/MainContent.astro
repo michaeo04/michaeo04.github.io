@@ -1,0 +1,44 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<main class="main-content">
+  {title && <h1 class="page-title">{title}</h1>}
+  {description && <p class="page-description">{description}</p>}
+  <div class="content">
+    <slot />
+  </div>
+</main>
+
+<style>
+  .page-title {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--space-3);
+    color: var(--color-text-primary);
+  }
+
+  .page-description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-8);
+  }
+
+  .content {
+    max-width: var(--content-max-width);
+  }
+
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .page-description {
+      font-size: var(--font-size-base);
+    }
+  }
+</style>

@@ -1,0 +1,37 @@
+---
+import CategoryLayout from '@layouts/CategoryLayout.astro';
+import { getAllMovies } from '@utils/content';
+
+const movies = await getAllMovies();
+---
+
+<CategoryLayout
+  title="Movies | Michael Eo"
+  contentTitle="Movies"
+  contentDescription="Films that inspire and move me"
+>
+  <div class="movies-list">
+    {movies.map(async (movie) => {
+      const { Content } = await movie.render();
+      return (
+        <article class="movie-content prose">
+          <Content />
+        </article>
+      );
+    })}
+  </div>
+</CategoryLayout>
+
+<style>
+  .movies-list {
+    display: grid;
+    gap: var(--space-12);
+  }
+
+  .movie-content {
+    padding: var(--space-6);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+  }
+</style>
