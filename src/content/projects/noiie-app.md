@@ -14,7 +14,7 @@ A discovery-to-delivery product built to make English speaking practice **fun, m
 
 ## 🔗 Related Links
 
-- **[Figma Design Board](https://www.figma.com/board/I3W3UaRySHSlJhAulnUXoR/Noiie---English-Speaking-Reflex-Training-App?node-id=0-1&p=f)** – Everything you need is all in there
+- **[Figma Design Board](https://www.figma.com/board/I3W3UaRySHSlJhAulnUXoR/Noiie---English-Speaking-Reflex-Training-App?node-id=0-1&t=2zJUXpNrrXVwneeP-1)** – Everything you need is all in there 
 - **[Product Requirement Document](https://tamnhu.notion.site/Product-Requirement-Document-2b7ae24be51e80f5978bfe139cc7a79e)** – Bonus docs
 
 ---

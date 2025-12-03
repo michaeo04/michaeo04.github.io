@@ -75,8 +75,8 @@ const movies = await getAllMovies();
 
   .movies-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-4);
     margin-bottom: var(--space-8);
   }
 
@@ -124,34 +124,34 @@ const movies = await getAllMovies();
 
   .movie-rating {
     position: absolute;
-    top: var(--space-3);
-    right: var(--space-3);
+    top: var(--space-2);
+    right: var(--space-2);
     background: rgba(62, 56, 50, 0.95);
     color: var(--color-accent-primary);
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-1) var(--space-2);
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
     gap: var(--space-1);
     font-weight: var(--font-weight-bold);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     backdrop-filter: blur(8px);
   }
 
   .rating-icon {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
   }
 
   .movie-info {
-    padding: var(--space-5);
+    padding: var(--space-4);
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--space-1);
     flex-grow: 1;
   }
 
   .movie-title {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-base);
     font-weight: var(--font-weight-bold);
     color: var(--color-text-primary);
     margin: 0;
@@ -159,12 +159,12 @@ const movies = await getAllMovies();
   }
 
   .movie-meta {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     color: var(--color-text-muted);
     margin: 0;
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-1);
   }
 
   .separator {
@@ -172,22 +172,23 @@ const movies = await getAllMovies();
   }
 
   .movie-description {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     color: var(--color-text-secondary);
     line-height: var(--line-height-normal);
     margin: 0;
+    margin-top: var(--space-1);
     flex-grow: 1;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
   .read-more {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     color: var(--color-accent-primary);
     font-weight: var(--font-weight-medium);
-    margin-top: var(--space-2);
+    margin-top: var(--space-1);
     transition: transform var(--transition-fast);
     display: inline-block;
   }
@@ -209,8 +210,8 @@ const movies = await getAllMovies();
   /* Responsive */
   @media (max-width: 768px) {
     .movies-grid {
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: var(--space-4);
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--space-3);
     }
 
     .movies-intro {
@@ -219,6 +220,14 @@ const movies = await getAllMovies();
 
     .movies-intro p {
       font-size: var(--font-size-base);
+    }
+
+    .movie-info {
+      padding: var(--space-3);
+    }
+
+    .movie-title {
+      font-size: var(--font-size-sm);
     }
   }
 </style>
