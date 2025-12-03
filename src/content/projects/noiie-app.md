@@ -8,8 +8,6 @@ featured: true
 
 ![Noiie App Cover](/public/images/projects/noiie/thumbail-noiie.png)
 
-# Noiie – English Learning App
-
 A discovery-to-delivery product built to make English speaking practice **fun, motivating, and personalized**.
 
 ---

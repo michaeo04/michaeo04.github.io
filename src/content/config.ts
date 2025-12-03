@@ -27,16 +27,19 @@ const memories = defineCollection({
   }),
 });
 
-// Movies collection
+// Movies collection - Individual film reviews
 const movies = defineCollection({
   type: 'content',
   schema: z.object({
-    title: z.string(),
-    year: z.number().optional(),
-    rating: z.number().min(1).max(10).optional(),
-    review: z.string().optional(),
-    poster: z.string().optional(),
-    watchedDate: z.date().optional(),
+    title: z.string(), // Movie title
+    director: z.string(), // Director name
+    year: z.number(), // Release year
+    watchedDate: z.date(), // When you watched it
+    rating: z.number().min(0).max(10), // Your rating out of 10
+    thumbnail: z.string().optional(), // Movie poster/thumbnail path
+    genre: z.array(z.string()).optional(), // Genres: drama, comedy, etc.
+    runtime: z.string().optional(), // e.g., "2h 28min"
+    description: z.string(), // Short description/tagline
   }),
 });
 

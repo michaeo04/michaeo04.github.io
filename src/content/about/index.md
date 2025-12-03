@@ -1,11 +1,8 @@
 ---
-title: "About Me"
+title: "👋 About Me"
 role: "Developer & Creator"
 bio: "Building beautiful experiences on the web"
 ---
-
-## 👋 About Me
-
 Hi, I’m a tech-driven builder with a background in **Management Information Systems** at **National Economics of University** and a strong passion for **product development, business analysis, data, and AI (newbie, i have just a vibecoder lmao)**.  
 I enjoy transforming ideas into real, working systems — whether it’s a **mobile app**, a **machine learning model**, or a **clean analytic dashboard**.
 

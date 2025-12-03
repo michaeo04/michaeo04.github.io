@@ -6,32 +6,219 @@ const movies = await getAllMovies();
 ---
 
 <CategoryLayout
-  title="Movies | Michael Eo"
-  contentTitle="Movies"
-  contentDescription="Films that inspire and move me"
+  title="Movies | Michael Ngủ yên"
+  contentTitle="Movie Reviews"
+  contentDescription="My personal film journal - thoughts, feelings, and reflections on cinema"
 >
-  <div class="movies-list">
-    {movies.map(async (movie) => {
-      const { Content } = await movie.render();
+  <div class="movies-intro">
+    <p>
+      Welcome to my movie review collection. Each review is a personal reflection on films
+      that have moved me, challenged me, or stayed with me long after the credits rolled.
+    </p>
+  </div>
+
+  <div class="movies-grid">
+    {movies.map((movie) => {
+      const { title, director, year, rating, thumbnail, description, watchedDate } = movie.data;
+
       return (
-        <article class="movie-content prose">
-          <Content />
+        <article class="movie-card">
+          <a href={`/movies/${movie.slug}`} class="movie-card-link">
+            {thumbnail && (
+              <div class="movie-poster">
+                <img src={thumbnail} alt={`${title} poster`} loading="lazy" />
+                <div class="movie-rating">
+                  <span class="rating-icon">⭐</span>
+                  <span class="rating-value">{rating}</span>
+                </div>
+              </div>
+            )}
+
+            <div class="movie-info">
+              <h3 class="movie-title">{title}</h3>
+              <p class="movie-meta">
+                <span class="director">{director}</span>
+                <span class="separator">•</span>
+                <span class="year">{year}</span>
+              </p>
+              <p class="movie-description">{description}</p>
+              <span class="read-more">Read review →</span>
+            </div>
+          </a>
         </article>
       );
     })}
   </div>
+
+  {movies.length === 0 && (
+    <div class="empty-state">
+      <p>No movie reviews yet. Check back soon!</p>
+    </div>
+  )}
 </CategoryLayout>
 
 <style>
-  .movies-list {
-    display: grid;
-    gap: var(--space-12);
-  }
-
-  .movie-content {
+  .movies-intro {
+    margin-bottom: var(--space-8);
     padding: var(--space-6);
     background: var(--color-bg-secondary);
     border-radius: var(--radius-lg);
     border: 1px solid var(--color-border);
+  }
+
+  .movies-intro p {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  .movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+  }
+
+  .movie-card {
+    background: var(--color-bg-secondary);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all var(--transition-base);
+    height: 100%;
+  }
+
+  .movie-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-accent-primary);
+  }
+
+  .movie-card-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .movie-poster {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    background: var(--color-bg-tertiary);
+  }
+
+  .movie-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-base);
+  }
+
+  .movie-card:hover .movie-poster img {
+    transform: scale(1.05);
+  }
+
+  .movie-rating {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    background: rgba(62, 56, 50, 0.95);
+    color: var(--color-accent-primary);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
+    backdrop-filter: blur(8px);
+  }
+
+  .rating-icon {
+    font-size: var(--font-size-base);
+  }
+
+  .movie-info {
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex-grow: 1;
+  }
+
+  .movie-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .movie-meta {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .separator {
+    color: var(--color-border);
+  }
+
+  .movie-description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-normal);
+    margin: 0;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .read-more {
+    font-size: var(--font-size-sm);
+    color: var(--color-accent-primary);
+    font-weight: var(--font-weight-medium);
+    margin-top: var(--space-2);
+    transition: transform var(--transition-fast);
+    display: inline-block;
+  }
+
+  .movie-card:hover .read-more {
+    transform: translateX(4px);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: var(--space-16) var(--space-8);
+    color: var(--color-text-muted);
+  }
+
+  .empty-state p {
+    font-size: var(--font-size-lg);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .movies-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .movies-intro {
+      padding: var(--space-4);
+    }
+
+    .movies-intro p {
+      font-size: var(--font-size-base);
+    }
   }
 </style>

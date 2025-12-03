@@ -26,7 +26,9 @@ export async function getAllMemories() {
 
 export async function getAllMovies() {
   const movies = await getCollection('movies');
-  return movies;
+  return movies.sort((a, b) =>
+    b.data.watchedDate.getTime() - a.data.watchedDate.getTime()
+  );
 }
 
 export async function getAllMusic() {
