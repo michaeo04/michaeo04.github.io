@@ -1,12 +1,12 @@
 ---
 title: "Noiie – English Learning App"
 description: "A gamified English-speaking learning app with dynamic mascot interactions and real-time feedback"
-date: 2024-12-01
+date: 2025-12-01
 tags: ["mobile-app", "product-management", "gamification", "nlp", "education"]
 featured: true
 ---
 
-![Noiie App Cover](/images/projects/noiie/thumbail-noiie.png)
+![Noiie App Cover](/public/images/projects/noiie/thumbail-noiie.png)
 
 # Noiie – English Learning App
 
@@ -40,7 +40,7 @@ I contributed across both **Discovery** and **Delivery** phases — defining the
 
 ## 🚀 Key Features
 
-![Feature Map](/images/projects/noiie/feature-map.png)
+![Feature Map](/public/images/projects/noiie/feature-map.png)
 
 ### 🎭 1. Dynamic Mascot System
 

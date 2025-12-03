@@ -1,6 +1,6 @@
 ---
 title: "Building My First Website"
-date: 2024-12-02
+date: 2025-12-02
 location: "Home"
 description: "The journey of creating this portfolio from scratch"
 ---
